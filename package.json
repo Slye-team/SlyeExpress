@@ -1,0 +1,14 @@
+{
+  "name": "slye-express",
+  "version": "0.5.0",
+  "description": "A simple web framework to create APIs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alireza Ghadimi <Qti3eQti3e@gmail.com> (Qti3e)",
+  "license": "MIT",
+  "dependencies": {
+    "aes-js": "^3.1.0"
+  }
+}
