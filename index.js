@@ -37,7 +37,9 @@ function extend(object, parent){
  *  run(port)
  */
 function createApp(){
-    let __SlyeExpress__ = {};
+    let __SlyeExpress__ = {
+        __uploader_status__: false
+    };
 
     function pushFiles(array, pattern){
         // Create array of file names
@@ -96,6 +98,9 @@ function createApp(){
          */
         redis(redis){
             __SlyeExpress__.redis   = redis
+            redis.on('connect', function () {
+                console.log("Connected to Redis")
+            })
         },
         /**
          * Register a new variable so it can be used in all application scopes
@@ -106,33 +111,27 @@ function createApp(){
         set(key, value){
             __SlyeExpress__[key] = value
         },
+        mw(method){
+            if(!__SlyeExpress__.__mw)
+                __SlyeExpress__.__mw    = []
+            __SlyeExpress__.__mw.push(method)
+        },
         uploader:{
-            enable(){
-
-            },
             disable(){
-
+                __SlyeExpress__.__uploader_status__ = true
             },
-            max(val){
-
+            enable(){
+                __SlyeExpress__.__uploader_status__ = false
             },
-            formats(...heads){
-
+            maxSize(size){
+                __SlyeExpress__.__uploader_max_size__ = size
             },
-            anonymous:{
-                enable(){
-
-                },
-                disable(){
-
-                },
-                max(val){
-
-                },
-                formats(...heads){
-
-                }
-            }
+            storage(SEStorage){
+                __SlyeExpress__.__MulterStorage__   = SEStorage
+            },
+        },
+        allowOrigin(sites){
+            __SlyeExpress__._ao = sites
         },
         client(appname){
             if(!__SlyeExpress__.__clients)
@@ -186,7 +185,7 @@ function createApp(){
                 console.log(`Worker ${process.pid} started`)
             }
         }
-    }, libs);
+    }, libs(__SlyeExpress__));
 
 }
 
@@ -215,7 +214,7 @@ function createApp(){
  * @constructor
  */
 function SlyeExpress(){
-    return extend(global.__SlyeExpress__, libs)
+    return extend(global.__SlyeExpress__, libs(global.__SlyeExpress__))
 }
 SlyeExpress.createApp = createApp
 

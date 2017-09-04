@@ -19,6 +19,14 @@ const SlyeProto = require('./SlyeProto')
 function serve(__SlyeExpress__, port){
     const express   = require('express')
     const app       = express()
+    const bodyParser= require('body-parser');
+    const multer    = require('multer');
+    const File      = require('../libs/files/file')(__SlyeExpress__)
+    // parse application/x-www-form-urlencoded
+    app.use(bodyParser.urlencoded({ extended: false }))
+    // parse application/json
+    app.use(bodyParser.json())
+
 
     /**
      * Register a new endpoint
@@ -81,10 +89,10 @@ function serve(__SlyeExpress__, port){
     // middleware to manage origin control
     app.use(function (req, res, next) {
         // Website you wish to allow to connect
-        res.setHeader('Access-Control-Allow-Origin', '*')
+        res.setHeader('Access-Control-Allow-Origin', __SlyeExpress__._ao || '*')
 
         // Request methods you wish to allow
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
 
         // Request headers you wish to allow
         res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
@@ -93,10 +101,8 @@ function serve(__SlyeExpress__, port){
         // to the API (e.g. in case you use sessions)
         res.setHeader('Access-Control-Allow-Credentials', true)
 
-        res.setHeader('Access-Control-Expose-Headers', 'SlyeProto-Key')
-
         // Pass to next layer of middleware
-        next(
+        next()
     })
 
     // Middleware to set req.ip
@@ -127,8 +133,26 @@ function serve(__SlyeExpress__, port){
         next()
     })
 
-    app.post('/api/upload', function(){
 
+    if(__SlyeExpress__.__uploader_status__){
+        let upload = multer({
+            storage:  __SlyeExpress__.__MulterStorage__,
+            limits: {
+                fileSize: __SlyeExpress__.__uploader_max_size__
+            }
+        });
+
+        app.post('/api/upload', upload.single('file'), function(req, res, next){
+            File._register(req.file, (err, id) => {
+                if(err)
+                    return res.status(500).send(err)
+                res.send(id)
+            })
+        })
+    }
+
+    app.all('*', function(req, res){
+        res.status(404).send(404)
     })
 
     loadEndpoints()
