@@ -93,11 +93,14 @@ DiskStorage.prototype._moveFile	= function(req, file, newPath , cb){
 	fs.rename(p, newPath)
 }
 
-module.exports = new DiskStorage({
-    destination: function (req, file, cb) {
-        cb(null, __dirname + '/.tmp');
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now());
-    }
-})
+module.exports = function(){
+	mkdirp.sync('./.tmp')
+	return new DiskStorage({
+	    destination: function (req, file, cb) {
+	        cb(null, './.tmp');
+	    },
+	    filename: function (req, file, cb) {
+	        cb(null, file.fieldname + '-' + Date.now());
+	    }
+	})
+}

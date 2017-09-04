@@ -3,6 +3,7 @@ module.exports = function(__SlyeExpress__){
         storage:{
             disk: require('./storage/disk')
         },
-        File: require('./files/file.js')(__SlyeExpress__)
+        File: require('./files/file.js')(__SlyeExpress__),
+        validate: require('./validate')
     }
 }
