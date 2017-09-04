@@ -1,6 +1,6 @@
 const fs    = require('fs')
 
-global._files_s2m   = global._files_s2m || JSON.parse(fs.readFileSync('./db/s2m.json'))
+global._files_s2m   = global._files_s2m || JSON.parse(fs.readFileSync(__dirname + '/db/s2m.json'))
 global._files_s2mk  = global._files_s2mk || Object.keys(global._files_s2m)
 
 global._files_msign = global._files_msign || 0

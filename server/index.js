@@ -45,14 +45,16 @@ function serve(__SlyeExpress__, port){
     __SlyeExpress__.endpoint    = function(name, ...middlewares){
         if(worker.id == 1)
             console.log('Registered endpoint:', name)
+        if(!__SlyeExpress__.__mw)
+            __SlyeExpress__.__mw = []
         if(!__SlyeExpress__.__endpoints)
             __SlyeExpress__.__endpoints  = {}
-        __SlyeExpress__.__endpoints[name]   = middlewares
+        __SlyeExpress__.__endpoints[name]   = __SlyeExpress__.__mw.concat(middlewares)
     }
 
     function loadEndpoints(){
         global.__SlyeExpress__  = __SlyeExpress__
-        let files   = __SlyeExpress__.__files__endpoints
+        let files   = __SlyeExpress__.__files__endpoints || []
         for(let i = 0; i < files.length;i++){
             try{
                 require(files[i])
@@ -66,7 +68,7 @@ function serve(__SlyeExpress__, port){
 
     function loadModels(){
         global.__SlyeExpress__  = __SlyeExpress__
-        let files   = __SlyeExpress__.__files__models
+        let files   = __SlyeExpress__.__files__models || []
         if(!__SlyeExpress__.models)
             __SlyeExpress__.models = {}
         for(let i = 0; i < files.length;i++){
@@ -110,7 +112,7 @@ function serve(__SlyeExpress__, port){
         let nginx_header = __SlyeExpress__.nginx_header || 'X-Real-IP'
         req.ip  = req.headers[nginx_header]
             || req.headers['x-forwarded-for']
-            || req.connection.remoteAddress)
+            || req.connection.remoteAddress
         next()
     })
 
@@ -180,4 +182,4 @@ function serve(__SlyeExpress__, port){
     port = isNaN(port) ? 3000 : port
     listen(port, max, port)
 }
-modules.exports = serve
+module.exports = serve

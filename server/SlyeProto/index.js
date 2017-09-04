@@ -4,7 +4,7 @@ const AES       = require('aes-js')
 function sha256(){
     return crypto.createHash('sha256').update(string).digest('hex');
 }
-modules.exports = function(__SlyeExpress__){
+module.exports = function(__SlyeExpress__){
     return function SlyeProto(req, res, next){
         let {body}    = req
         if(!body['app.id'] || !body['data'])

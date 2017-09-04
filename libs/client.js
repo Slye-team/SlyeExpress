@@ -33,4 +33,4 @@ class CLIENT{
     }
 }
 
-modules.exports = CLIENT
+module.exports = CLIENT

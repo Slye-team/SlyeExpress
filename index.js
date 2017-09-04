@@ -172,7 +172,7 @@ function createApp(){
                     let pid     = worker.process.pid
                     // Uptime in ms
                     let upTime = Date.now() - startTimes[pid]
-                    if(runTime > 5000){
+                    if(upTime > 5000){
                         console.log(`worker ${pid} died, start it automatically`)
                         cluster.fork()
                     }else{
@@ -218,4 +218,4 @@ function SlyeExpress(){
 }
 SlyeExpress.createApp = createApp
 
-modules.exports = SlyeExpress
+module.exports = SlyeExpress
